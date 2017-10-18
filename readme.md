@@ -210,7 +210,7 @@ this solution comes from stackoverflow https://stackoverflow.com/questions/14629
 
 Ok now we will refresh the browser again
 It will represent us with this:
-![sanky example](assets/image/sanky1.PNG)
+![sanky example](assets/image/sankey1.PNG)
 That more like it!
 
 Still why are nodes without lines?
