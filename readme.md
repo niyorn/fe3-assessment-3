@@ -1,13 +1,7 @@
-# ![Assessment 3][banner]
-
-This repository can be forked for [**assessment 3**][a2] of [frontend 3][fe3]
-at [**@CMDA**][cmda].
-
-
 ## Proces
 
 The first thing I did was download the source file of the sanky plugin. From this source it will create this sanky.
-![sanky example](/assets/image/sanky-examle.PNG)
+![sanky example](assets/image/sanky-examle.PNG)
 
 To get the the graph working we need to format our dataset to a dataset that looks like this:
 
