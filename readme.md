@@ -57,19 +57,10 @@ allMusicGenre.forEach(function(musicGenre) {
 ```
 This function will give this result:
 ```
-0
-:
-{value: Array(11), musicGenre: "Dance", total: 376}
-1
-:
-{value: Array(11), musicGenre: "Folk", total: 144}
-2
-:
-{value: Array(11), musicGenre: "Country", total: 118}
-3
-:
-{value: Array(11), musicGenre: "Classical music", total: 335}
-etc
+0: {value: Array(11), musicGenre: "Dance", total: 376}
+1: {value: Array(11), musicGenre: "Folk", total: 144}
+2:{value: Array(11), musicGenre: "Country", total: 118}
+3 etc
 ```
 
 From there we want to know how many of these people like a specific genre.
@@ -90,48 +81,63 @@ allMovieGenre.forEach(function(movieGenre){
 ```
 And from that we got this as result;
 ```
-musicGenre
-:
-"Dance"
-total
-:
-376
-value
-:
-Array(11)
-0
-:
-{movieGenre: "Horror", total: 139}
-1
-:
-{movieGenre: "Thriller", total: 203}
-2
-:
-{movieGenre: "Comedy", total: 343}
-3
-:
-{movieGenre: "Romantic", total: 214}
-4
-:
-{movieGenre: "Sci-fi", total: 149}
-5
-:
-{movieGenre: "War", total: 151}
-6
-:
-{movieGenre: "Fantasy/Fairy tales", total: 238}
-7
-:
-{movieGenre: "Animated", total: 249}
-8
-:
-{movieGenre: "Documentary", total: 210}
-9
-:
-{movieGenre: "Western", total: 44}
-10
-:
-{movieGenre: "Action", total: 234}
+musicGenre:"Dance"
+total:376
+value: Array(11)
+0:{movieGenre: "Horror", total: 139}
+1:{movieGenre: "Thriller", total: 203}
+2:{movieGenre: "Comedy", total: 343}
+3:{movieGenre: "Romantic", total: 214}
+4:{movieGenre: "Sci-fi", total: 149}
+5 etc
+```
+Ok now that we have that, lets look at sankey function again and look how it want its data presented. src: https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks.
+```javascript
+graph.nodes.forEach(function(x) {
+  nodeMap[x.name] = x; //<---All the name
+});
+graph.links = graph.links.map(function(x) {
+  return {
+    source: nodeMap[x.source], //<--Start point
+    target: nodeMap[x.target], //<--End point
+    value: x.value //<--Value
+  };
+});
+```
+If we look at that function, we can see it wants a 'source', a 'target' and a 'value'.
+In our nestData we all have this information. We will create a function that get all the 'source' and value;
+The function looks like this:
+```javascript
+//Format data to sankey
+var nodes = [];
+var links = [];
+var sankyData = {nodes, links};
+
+nestData.forEach(function(d){
+  var total = d.movieTotal;
+  d.value.forEach(function(data){
+    let linkObject = {};
+    linkObject.source = d.musicGenre;
+    linkObject.target = data.movieGenre;
+    linkObject.value = Math.round(data.total/d.movieTotal*100);//calculate the percentage
+    links.push(linkObject)
+  });
+});
+```
+
+that will give us this:
+```
+1:{source: "Dance", target: "Thriller", value: 9}
+2:{source: "Dance", target: "Comedy", value: 16}
+3:{source: "Dance", target: "Romantic", value: 10}
+4:{source: "Dance", target: "Sci-fi", value: 7}
+5:{source: "Dance", target: "War", value: 7}
+6:{source: "Dance", target: "Fantasy/Fairy tales", value: 11}
+7:{source: "Dance", target: "Animated", value: 11}
+8:{source: "Dance", target: "Documentary", value: 10}
+9:{source: "Dance", target: "Western", value: 2}
+10:{source: "Dance", target: "Action", value: 11}
+etc
 ```
 
 ## TODO
