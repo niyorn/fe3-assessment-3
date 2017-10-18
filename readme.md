@@ -139,6 +139,100 @@ that will give us this:
 10:{source: "Dance", target: "Action", value: 11}
 etc
 ```
+/Value is in percentage/
+
+Getting all the name (object) is simple because we already have an array that  saved all  name of the music genre and movie genre;
+```javascript
+var nodes = [];
+//Get all nodes
+  allMusicGenre.forEach(function(d){
+    nodes.push(d);
+  });
+  allMovieGenre.forEach(function(d){
+    nodes.push(d);
+  });
+```
+From there we saved all data data that we have in an objects
+```javascript
+var sankyData = {nodes, links};
+```
+This object contains all the 'nodes', 'source', 'target' and 'value';
+
+Ok now we will add the 'sankeyData' object to the sankey function like this:
+
+```javascript
+sankey
+  .nodes(sankeyData.nodes)
+  .links(sankeyData.links)
+  .layout(32);
+```
+
+If we refresh the browser, the browser will give this error:
+```
+Uncaught TypeError: Cannot read property 'push' of undefined
+```
+Why is that?
+
+After searching on the web why it doesnt work, I stumble on the solution:
+First of all why I doesn't work:
+
+If we look at the sankey function, it is searching for the index, a number value. Like this:
+
+```
+{
+"nodes":[
+{"node":0,"name":"node0"},
+{"node":1,"name":"node1"},
+{"node":2,"name":"node2"},
+{"node":3,"name":"node3"},
+{"node":4,"name":"node4"}
+],
+"links":[
+{"source":0,"target":2,"value":2},
+{"source":1,"target":2,"value":2},
+{"source":1,"target":3,"value":2},
+{"source":0,"target":4,"value":2},
+{"source":2,"target":3,"value":2},
+{"source":2,"target":4,"value":2},
+{"source":3,"target":4,"value":4}
+]}
+```
+Here you can see that the source and target correspont with the index of the nodes.  Instead what we have on those places are the name.
+So we need to change the name to the index of the nodes.
+
+This little piece of code will do just that for us:
+```javascript
+var nodeMap = {};
+ sankeyData.nodes.forEach(function(x) { nodeMap[x.name] = x; });
+ sankeyData.links = sankeyData.links.map(function(x) {
+ return {
+ source: nodeMap[x.source],
+ target: nodeMap[x.target],
+ value: x.value
+ };
+ });
+```
+this solution comes from stackoverflow https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
+
+Ok now we will refresh the browser again
+It will represent us with this:
+![sanky example](assets/image/sanky-examle.PNG)
+That more like it!
+
+Still why are nodes without lines?
+If we look at the console it give us this error:
+```
+Error: <path> attribute d: Expected number, "…58505670447 490,NaN 944,NaN".
+``
+So it gets something that is not a number.
+
+If we nog the 'nestData' we can why that is.
+```
+11:{value: Array(11), musicGenre: "Swing,  Jazz", total: 0, movieTotal: 0}
+12:{value: Array(11), musicGenre: "Rock 'n Roll", total: 0, movieTotal: 0}
+```
+some value are zero. So we need to create a function that fillter this out.
+
 
 ## TODO
 

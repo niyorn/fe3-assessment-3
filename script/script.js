@@ -18,7 +18,6 @@ var formatNumber = d3.format(",.0f"), // zero decimal places
 
   color = d3.schemeCategory20;
 
-
 // append the svg canvas to the page
 var svg = d3.select("#chart").append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -34,96 +33,39 @@ var sankey = d3.sankey()
   .size([width, height]);
 var path = sankey.link();
 
-// load the data
-d3.json("sankey-formatted.json", function(error, graph) {
-  //A loop that create the links of between the nodes
-  //src https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
-  var nodeMap = {};
-  graph.nodes.forEach(function(x) {
-    nodeMap[x.name] = x; //<---All the name
-  });
-  graph.links = graph.links.map(function(x) {
-    return {
-      source: nodeMap[x.source], //<--Start point
-      target: nodeMap[x.target], //<--End point
-      value: x.value //<--Value
-    };
-  });
+var units = "Widgets";
 
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 10, bottom: 10, left: 10},
+    width = 1000 - margin.left - margin.right,
+    height = 2000 - margin.top - margin.bottom;
 
-  sankey
-    .nodes(graph.nodes)
-    .links(graph.links)
-    .layout(32);
+// format variables
+var formatNumber = d3.format(",.0f"),    // zero decimal places
+    format = function(d) { return formatNumber(d) + " " + units; },
+    color = d3.scaleOrdinal(d3.schemeCategory20);
 
-  // add in the links
-  var link = svg.append("g").selectAll(".link")
-    .data(graph.links)
-    .enter().append("path")
-    .attr("class", "link")
-    .attr("d", path)
-    .style("stroke-width", function(d) {
-      return Math.max(1, d.dy);
-    })
-    .sort(function(a, b) {
-      return b.dy - a.dy;
-    });
+// append the svg object to the body of the page
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
 
-  // add the link titles
-  link.append("title")
-    .text(function(d) {
-      return d.source.name + " → " +
-        d.target.name + "\n" + format(d.value);
-    });
+// Set the sankey diagram properties
+var sankey = d3.sankey()
+    .nodeWidth(36)
+    .nodePadding(40)
+    .size([width, height]);
 
-  // add in the nodes
-  var node = svg.append("g").selectAll(".node")
-    .data(graph.nodes)
-    .enter().append("g")
-    .attr("class", "node")
-    .attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")";
-    });
-
-  // add the rectangles for the nodes
-  node.append("rect")
-    .attr("height", function(d) {
-      return d.dy;
-    })
-    .attr("width", sankey.nodeWidth())
-    .style("fill", 'red')
-    .style("stroke", function(d) {
-      return d3.rgb(d.color).darker(2);
-    })
-    .append("title")
-    .text(function(d) {
-      return d.name + "\n" + format(d.value);
-    });
-
-  // add in the title for the nodes
-  node.append("text")
-    .attr("x", -6)
-    .attr("y", function(d) {
-      return d.dy / 2;
-    })
-    .attr("dy", ".35em")
-    .attr("text-anchor", "end")
-    .attr("transform", null)
-    .text(function(d) {
-      return d.name;
-    })
-    .filter(function(d) {
-      return d.x < width / 2;
-    })
-    .attr("x", 6 + sankey.nodeWidth())
-    .attr("text-anchor", "start");
-});
-
+var path = sankey.link();
 
 //load data
 d3.csv('data.csv', function(err, data) {
   if (err) throw err;
 
+  //my code from here --->
   //All the music genre that are in the dataset
   var allMusicGenre = ['Dance', 'Folk', 'Country', 'Classical music', 'Musical', 'Pop', 'Rock', 'Metal or Hardrock', 'Punk', 'Hiphop, Rap', 'Reggae, Ska', 'Swing,  Jazz', "Rock 'n Roll", 'Alternative', 'Latino', 'Techno, Trance', 'Opera'];
 
@@ -131,7 +73,7 @@ d3.csv('data.csv', function(err, data) {
   var allMovieGenre = ['Horror', 'Thriller', 'Comedy', 'Romantic', 'Sci-fi', 'War', 'Fantasy/Fairy tales', 'Animated', 'Documentary', 'Western', 'Action'];
 
   var nestData = [];
-
+  console.log(nestData);
   //This function will get all the position from the data of the //people who like a specific genre.
   allMusicGenre.forEach(function(musicGenre) {
     let music = {};
@@ -177,63 +119,58 @@ d3.csv('data.csv', function(err, data) {
   //              Create graph
   //
 
-  // //A loop that create the links of between the nodes
-  // //src https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
-  // var nodeMap = {};
-  // nestData.forEach(function(x) {
-  //   nodeMap[x.musicGenre] = x;
-  //   console.log(nodeMap);
-  // });
-  //
-  // nestData.links = nestData.map(function(x) {
-  //   console.log(x);
-  //   return {
-  //     source: nodeMap[x.source],
-  //     target: nodeMap[x.target],
-  //     value: x.value
-  //   };
-  // });
-
-  // var nodeMap = {};
-  // graph.nodes.forEach(function(x) {
-  //   console.log(graph);
-  //   nodeMap[x.name] = x;
-  // });
-  // graph.links = graph.links.map(function(x) {
-  //   return {
-  //     source: nodeMap[x.source],
-  //     target: nodeMap[x.target],
-  //     value: x.value
-  //   };
-  // });
-
   //Format data to sankey
   var nodes = [];
   var links = [];
-  var sankyData = {nodes, links};
+  var sankeyData = {
+    nodes,
+    links
+  };
 
-  nestData.forEach(function(d){
+  //function that get the source, target and value for the links
+  nestData.forEach(function(d) {
     var total = d.movieTotal;
-    d.value.forEach(function(data){
+    d.value.forEach(function(data) {
       let linkObject = {};
       linkObject.source = d.musicGenre;
       linkObject.target = data.movieGenre;
-      linkObject.value = Math.round(data.total/d.movieTotal*100);//calculate the percentage
+      linkObject.value = Math.round(data.total / d.movieTotal * 100); //calculate the percentage
       links.push(linkObject)
     });
   });
 
-console.log(links);
+  //Get all nodes
+  allMusicGenre.forEach(function(d) {
+    var node = {}
+    node.name = d;
+    nodes.push(node);
+  });
+  allMovieGenre.forEach(function(d) {
+    var node = {}
+    node.name = d;
+    nodes.push(node);
+  });
+//<-- to here | my code
 
+//this code come from here https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
+var nodeMap = {};
+ sankeyData.nodes.forEach(function(x) { nodeMap[x.name] = x; });
+ sankeyData.links = sankeyData.links.map(function(x) {
+ return {
+ source: nodeMap[x.source],
+ target: nodeMap[x.target],
+ value: x.value
+ };
+ });
 
   sankey
-    .nodes(nestData.nodes)
-    .links(nestData.links)
+    .nodes(sankeyData.nodes)
+    .links(sankeyData.links)
     .layout(32);
 
   // add in the links
   var link = svg.append("g").selectAll(".link")
-    .data(nestData.links)
+    .data(sankeyData.links)
     .enter().append("path")
     .attr("class", "link")
     .attr("d", path)
@@ -253,7 +190,7 @@ console.log(links);
 
   // add in the nodes
   var node = svg.append("g").selectAll(".node")
-    .data(nestData.nodes)
+    .data(sankeyData.nodes)
     .enter().append("g")
     .attr("class", "node")
     .attr("transform", function(d) {
@@ -294,3 +231,25 @@ console.log(links);
     .attr("text-anchor", "start");
 
 });
+
+
+
+
+
+
+
+
+
+//
+// var nodeMap = {};
+// sankeyData.nodes.forEach(function(x) {
+//   nodeMap[x] = x;
+// });
+// nodeMap.links = nodeMap.links.map(function(x) {
+//   console.log(x);
+//   return {
+//     source: nodeMap[x.source],
+//     target: nodeMap[x.target],
+//     value: nodeMap[x.value]
+//   };
+// });
