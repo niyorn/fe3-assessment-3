@@ -1,10 +1,10 @@
 ## Proces
 
 The first thing I did was download the source file of the sanky plugin. From this source it will create this sanky.
-![sanky example](assets/image/sanky-examle.PNG)
+![sanky example](assets/image/sanky-example.PNG)
 
 To get the the graph working we need to format our dataset to a dataset that looks like this:
-
+```
 {
 "nodes":[
 {"name":"Barry"},
@@ -21,7 +21,7 @@ To get the the graph working we need to format our dataset to a dataset that loo
 {"source":"Elvis","target":"Alice","value":2},
 {"source":"Elvis","target":"Sarah","value":2}
 ]}
-
+```
 The 'nodes' are the blocks.
 And the links cooordinate which nodes needs to connect with each other.
 
@@ -93,16 +93,10 @@ value: Array(11)
 ```
 Ok now that we have that, lets look at sankey function again and look how it want its data presented. src: https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks.
 ```javascript
-graph.nodes.forEach(function(x) {
-  nodeMap[x.name] = x; //<---All the name
-});
-graph.links = graph.links.map(function(x) {
-  return {
-    source: nodeMap[x.source], //<--Start point
-    target: nodeMap[x.target], //<--End point
-    value: x.value //<--Value
-  };
-});
+sankey
+  .nodes(sankeyData.nodes)
+  .links(sankeyData.links)
+  .layout(32);
 ```
 If we look at that function, we can see it wants a 'source', a 'target' and a 'value'.
 In our nestData we all have this information. We will create a function that get all the 'source' and value;
@@ -216,7 +210,7 @@ this solution comes from stackoverflow https://stackoverflow.com/questions/14629
 
 Ok now we will refresh the browser again
 It will represent us with this:
-![sanky example](assets/image/sanky-examle.PNG)
+![sanky example](assets/image/sanky1.PNG)
 That more like it!
 
 Still why are nodes without lines?
