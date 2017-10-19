@@ -3,7 +3,7 @@
 The first thing I did was download the source file of the sanky plugin. From this source it will create this sanky.
 ![sanky example](assets/image/sanky-example.PNG)
 
-To get the the graph working we need to format our dataset to a dataset that looks like this:
+To get the the graph working we need to format our dataset to a dataset that looks a little bit like this:
 ```
 {
 "nodes":[
@@ -256,6 +256,58 @@ node.append("rect")
   ```
   now lets see what we have
 ![sanky example](assets/image/sankeyAddColor.gif)
+
+Still that's a lot of Nodes. Lets make it that if you  click on a Node. lets say for example 'Pop', all the other nodes will disapear and you will only have one node left.
+
+First lets add an ID and a click Handler to the nodes, so we know which nodes we've clicked on.
+```javascript
+node.append("rect")
+  .attr("height", function(d) {
+    return d.dy;
+  })
+  .attr("width", sankey.nodeWidth())
+  .attr('id', function(d){//<--here
+    return d.name
+  })
+  .on('click', showOneData)//<--and here
+  .style("fill", function(d) {
+    return d.color = color(d.name.replace(/ .*/, "")); })
+  .append("title")
+  .text(function(d) {
+    return d.name + "\n" + format(d.value);
+  });
+```
+
+From there we're going to write a function that redraw the graph but with only one object in an array. The array contains the ID.
+```javascript
+var allMusicGenre = [genre];//Genre contains the name of the id
+```
+Lets see what we have
+![sanky example](assets/image/sankeyClick.gif)
+Very nice!
+
+Ok lets make it a little bit nice and at a transition to it.
+
+I created this function that draw the lines
+```javascript
+//this is added to the link object to create a white space
+.attr("stroke-dashoffset", "1870")
+.attr("stroke-dasharray", "1870")
+```
+```javascript
+//transition function
+function transition() {
+     var path = d3.selectAll('.link');
+     path
+          .transition()
+          .duration(4000)
+          .attr("stroke-dashoffset", "0");
+}
+```
+Now lets see the product
+![sanky example](assets/image/sankeyTransition.gif)
+
+
 
 
 
