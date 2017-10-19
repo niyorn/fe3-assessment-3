@@ -214,13 +214,14 @@ It will represent us with this:
 That more like it!
 
 Still why are nodes without lines?
-If we look at the console it give us this error:
+If we look at the console it give us this error:/
 ```
 Error: <path> attribute d: Expected number, "…58505670447 490,NaN 944,NaN".
-``
+```
 So it gets something that is not a number.
 
-If we nog the 'nestData' we can why that is.
+If we log the 'nestData' we can see why that is.
+
 ```
 11:{value: Array(11), musicGenre: "Swing,  Jazz", total: 0, movieTotal: 0}
 12:{value: Array(11), musicGenre: "Rock 'n Roll", total: 0, movieTotal: 0}
