@@ -5,18 +5,9 @@ var margin = {
     bottom: 10,
     left: 10
   },
-  width = 700 - margin.left - margin.right,
-  height = 300 - margin.top - margin.bottom;
+  width = 0 - margin.left - margin.right,
+  height = 0 - margin.top - margin.bottom;
 
-/*format is a function that returns a given number formatted with formatNumber as well as a space
-and our units of choice (‘Widgets’). This is used to display the values for the links and nodes later
-in the script.*/
-var formatNumber = d3.format(",.0f"), // zero decimal places
-  format = function(d) {
-    return formatNumber(d) + " " + units;
-  },
-
-  color = d3.schemeCategory20;
 
 // append the svg canvas to the page
 var svg = d3.select("#chart").append("svg")
@@ -36,28 +27,35 @@ var path = sankey.link();
 var units = "Widgets";
 
 // set the dimensions and margins of the graph
-var margin = {top: 10, right: 10, bottom: 10, left: 10},
-    width = 1000 - margin.left - margin.right,
-    height = 2000 - margin.top - margin.bottom;
+var margin = {
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10
+  },
+  width = 1200 - margin.left - margin.right,
+  height = 1500 - margin.top - margin.bottom;
 
 // format variables
-var formatNumber = d3.format(",.0f"),    // zero decimal places
-    format = function(d) { return formatNumber(d) + " " + units; },
-    color = d3.scaleOrdinal(d3.schemeCategory20);
+var formatNumber = d3.format(",.0f"), // zero decimal places
+  format = function(d) {
+    return formatNumber(d) + " " + units;
+  };
+  var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 // append the svg object to the body of the page
 var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
 
 // Set the sankey diagram properties
 var sankey = d3.sankey()
-    .nodeWidth(36)
-    .nodePadding(40)
-    .size([width, height]);
+  .nodeWidth(36)
+  .nodePadding(40)
+  .size([width, height]);
 
 var path = sankey.link();
 
@@ -67,13 +65,12 @@ d3.csv('data.csv', function(err, data) {
 
   //my code from here --->
   //All the music genre that are in the dataset
-  var allMusicGenre = ['Dance', 'Folk', 'Country', 'Classical music', 'Musical', 'Pop', 'Rock', 'Metal or Hardrock', 'Punk', 'Hiphop, Rap', 'Reggae, Ska', 'Swing,  Jazz', "Rock 'n Roll", 'Alternative', 'Latino', 'Techno, Trance', 'Opera'];
+  var allMusicGenre = ['Dance', 'Folk', 'Country', 'Classical music', 'Musical', 'Pop', 'Rock', 'Metal or Hardrock', 'Punk', 'Hiphop, Rap', 'Reggae, Ska', 'Alternative', 'Latino', 'Techno, Trance', 'Opera'];
 
   //All the movie  genre that are in the dataset
   var allMovieGenre = ['Horror', 'Thriller', 'Comedy', 'Romantic', 'Sci-fi', 'War', 'Fantasy/Fairy tales', 'Animated', 'Documentary', 'Western', 'Action'];
 
   var nestData = [];
-  console.log(nestData);
   //This function will get all the position from the data of the //people who like a specific genre.
   allMusicGenre.forEach(function(musicGenre) {
     let music = {};
@@ -150,18 +147,20 @@ d3.csv('data.csv', function(err, data) {
     node.name = d;
     nodes.push(node);
   });
-//<-- to here | my code
+  //<-- to here | my code
 
-//this code come from here https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
-var nodeMap = {};
- sankeyData.nodes.forEach(function(x) { nodeMap[x.name] = x; });
- sankeyData.links = sankeyData.links.map(function(x) {
- return {
- source: nodeMap[x.source],
- target: nodeMap[x.target],
- value: x.value
- };
- });
+  //this code come from here https://stackoverflow.com/questions/14629853/json-representation-for-d3-force-directed-networks
+  var nodeMap = {};
+  sankeyData.nodes.forEach(function(x) {
+    nodeMap[x.name] = x;
+  });
+  sankeyData.links = sankeyData.links.map(function(x) {
+    return {
+      source: nodeMap[x.source],
+      target: nodeMap[x.target],
+      value: x.value
+    };
+  });
 
   sankey
     .nodes(sankeyData.nodes)
@@ -203,10 +202,8 @@ var nodeMap = {};
       return d.dy;
     })
     .attr("width", sankey.nodeWidth())
-    .style("fill", 'red')
-    .style("stroke", function(d) {
-      return d3.rgb(d.color).darker(2);
-    })
+    .style("fill", function(d) {
+		  return d.color = color(d.name.replace(/ .*/, "")); })//<---here
     .append("title")
     .text(function(d) {
       return d.name + "\n" + format(d.value);
@@ -229,27 +226,4 @@ var nodeMap = {};
     })
     .attr("x", 6 + sankey.nodeWidth())
     .attr("text-anchor", "start");
-
 });
-
-
-
-
-
-
-
-
-
-//
-// var nodeMap = {};
-// sankeyData.nodes.forEach(function(x) {
-//   nodeMap[x] = x;
-// });
-// nodeMap.links = nodeMap.links.map(function(x) {
-//   console.log(x);
-//   return {
-//     source: nodeMap[x.source],
-//     target: nodeMap[x.target],
-//     value: nodeMap[x.value]
-//   };
-// });

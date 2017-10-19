@@ -226,6 +226,37 @@ If we nog the 'nestData' we can why that is.
 12:{value: Array(11), musicGenre: "Rock 'n Roll", total: 0, movieTotal: 0}
 ```
 some value are zero. So we need to create a function that fillter this out.
+After long digging  I cant come up with a solution. So I just delete it out of the array :)
+
+So lets refresh the page again.
+![sanky example](assets/image/sankey1work.gif)
+It works!!!
+
+Now lets add different color to the nodes, so we can differentiate them.
+This was created by d3noob from here: https://bl.ocks.org/d3noob/013054e8d7807dff76247b81b0e29030;
+First lets add a variable color.
+```javascript
+  var color = d3.scaleOrdinal(d3.schemeCategory20);
+```
+And in the rect lets add a function that calls the color.
+```javascript
+// add the rectangles for the nodes
+node.append("rect")
+  .attr("height", function(d) {
+    return d.dy;
+  })
+  .attr("width", sankey.nodeWidth())
+  .style("fill", function(d) {
+    return d.color = color(d.name.replace(/ .*/, "")); })//<---here
+  .append("title")
+  .text(function(d) {
+    return d.name + "\n" + format(d.value);
+  });
+  ```
+  now lets see what we have
+![sanky example](assets/image/sankeyAddColor.gif)
+
+
 
 
 ## TODO
