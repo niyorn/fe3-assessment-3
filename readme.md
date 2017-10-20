@@ -342,7 +342,7 @@ Now lets see the product
 
 
 ## The making of the bar chart
-By the making of the bar chat I created a new javascript file. This is done to keep the code organized, or else we dont know which code is which anymore.
+By the making of the bar chat I created a new javascript function. This is done to keep the code organized, or else we dont know which code is which anymore.
 
 The first thing I did was getting the height and width of the div container, so we can set our range
 ```javascript
