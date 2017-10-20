@@ -1,3 +1,33 @@
+![sanky example](assets/image/finisch.gif)
+This diagram shows the relationship between the music genre that people listen to and the movie genre they watch.
+The lines of the sankey diagram show genre relationship with each other. The thickness indicates the amount.
+At the bar chart are the names of the movie genre on the y axis. The x-axis indicates the amount (in percentage).
+
+##Data src
+The data was taken from here
+Link to src: https://www.kaggle.com/miroslavsabo/young-people-survey
+Download link: https://www.kaggle.com/miroslavsabo/young-people-survey/data
+
+An example of the data
+Music | Slow songs or fast songs | Dance | Folk | Country | Classical music
+-- | -- | -- | -- | -- | --
+5 | 3 | 2 | 1 | 2 | 2
+4 | 4 | 2 | 1 | 1 | 1
+5 | 5 | 2 | 2 | 3 | 4
+5 | 3 | 2 | 1 | 1 | 1
+5 | 3 | 4 | 3 | 2 | 4
+5 | 3 | 2 | 3 | 2 | 3
+5 | 5 | 5 | 3 | 1 | 2
+5 | 3 | 3 | 2 | 1 | 2
+5 | 3 | 3 | 1 | 1 | 2
+5 | 3 | 2 | 5 | 2 | 2
+5 | 3 | 3 | 2 | 1 | 2
+5 | 3 | 1 | 1 | 1 | 4
+5 | 3 | 1 | 2 | 1 | 4
+5 | 3 | 5 | 3 | 2 | 1
+
+1 = disagree disgaree 5 = totally agree
+
 ## Proces
 
 The first thing I did was download the source file of the sanky plugin. From this source it will create this sanky.
@@ -7,25 +37,26 @@ To get the the graph working we need to format our dataset to a dataset that loo
 ```
 {
 "nodes":[
-{"name":"Barry"},
-{"name":"Frodo"},
-{"name":"Elvis"},
-{"name":"Sarah"},
-{"name":"Alice"}
+{"node":0,"name":"node0"},
+{"node":1,"name":"node1"},
+{"node":2,"name":"node2"},
+{"node":3,"name":"node3"},
+{"node":4,"name":"node4"}
 ],
-
 "links":[
-{"source":"Barry","target":"Sarah","value":2},
-{"source":"Barry","target":"Alice","value":2},
-{"source":"Frodo","target":"Sarah","value":4},
-{"source":"Elvis","target":"Alice","value":2},
-{"source":"Elvis","target":"Sarah","value":2}
+{"source":0,"target":2,"value":2},
+{"source":1,"target":2,"value":2},
+{"source":1,"target":3,"value":2},
+{"source":0,"target":4,"value":2},
+{"source":2,"target":3,"value":2},
+{"source":2,"target":4,"value":2},
+{"source":3,"target":4,"value":4}
 ]}
 ```
 The 'nodes' are the blocks.
 And the links cooordinate which nodes needs to connect with each other.
 
-### Format the data
+### The sankey Graph
 First of all I created an array that saved all the music genre that there is in the dataset;
 From there I created a function that search for all the people that like specific genre.
 The function looks like this:
@@ -308,39 +339,106 @@ Now lets see the product
 ![sanky example](assets/image/sankeyTransition.gif)
 
 
+## The making of the bar chart
+By the making of the bar chat I created a new javascript file. This is done to keep the code organized, or else we dont know which code is which anymore.
 
+The first thing I did was getting the height and width of the div container, so we can set our range
+```javascript
+//this will be our range
+widthBar = d3.select('.bar-chart-container').node();
+widthBar = widthBar.getBoundingClientRect().width; //get width of container
+heightBar = d3.select('.bar-chart-container').node();
+heightBar = heightBar.getBoundingClientRect().height; //get width of container
+```
+From there we add this to the svg
+```javascript
+//The svg to draw the bar chart in
+var svgBar = d3.select(".bar-chart-container").append('svg'),
+  margin = {
+    top: 20,
+    right: 20,
+    bottom: 30,
+    left: 40
+  },
+  width = +widthBar - margin.left - margin.right,
+  height = +heightBar - margin.top - margin.bottom;
 
+var groups = svgBar.append('g')
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
+```
 
+From there we're going to add the x and y axis.
+We want to make a horizontal barchart so the y-axis is ordinal and the x is linear
+We can also set the domain and range because we already know that from 'SankeyData'
+```javascript
+//y Scale
+var yAs = d3.scaleBand()
+     .range([0, height])
+     .paddingInner(0.3)
+     .domain(data.map(
+          function(d) {
+               return d.name
+          }
+     ));
 
-## TODO
+//x Scale
+var xAs = d3.scaleLinear()
+     .range([0, width])
+     .domain([0, d3.max(data, function(d) {
+          return d.value;
+     })]);
+     //create the x-as
+     g.append('g')
+          .attr('class', 'axis axis--y')
+          .call(d3.axisLeft(yAs));
 
-*   [ ] [GitHub Pages](#github-pages)
-*   [ ] [Metadata](#metadata)
-*   [ ] [Issues](#issues)
-*   [ ] Replace this document in your fork with your own readme!
+     //create the y-as
+     g.append('g')
+          .attr('class', 'axis axis--x')
+          .call(d3.axisBottom(xAs))
+          .attr('transform', 'translate(0,' + height + ')');     
+     ```
+     ![barChart first try](assets/image/barChartNothing.gif)
 
-## GitHub Pages
+Ok the bar chart is there, but without any bar. So lets add that to it.
+```javascript
+//binding
+var rect = g.append('g').selectAll('rect').data(data);
+//This will be the underweight bar
+rect.enter()
+     .append('rect')
+     .attr('class', 'bar')
+     .attr('x', '0')
+     .attr('y', function(d){
+         return yAs(d.name);
+     })
+    .attr('width', function(d){
+        return xAs(d.value);
+    })
+    .attr('height', yAs.bandwidth());
+```
+Now lets see it again
+ ![barChart first try](assets/image/barChartAlmost.gif)
+ Very nice!  But why does it not fill the whole space.
+ After a long of digging, I've found the solution.
+In my css I gave the the bar chart container a display of flex and because of that it doesn't get the full width but the full height;
 
-Set up [GitHub Pages][pages] for this fork through the **Settings** pane.  Use
-the **Master branch** as its source.  Do not choose a Jekyll template.
-
-## Metadata
-
-Edit the **description** and **url** of your repository.  Click on edit above
-the green Clone or download button and fill in a correct description and use the
-`github.io` URL you just set up.
-
-## Issues
-
-Enable issues so we can give feedback by going to the settings tab of your fork
-and checking the box next to `issues`.
-
-[banner]: https://cdn.rawgit.com/cmda-fe3/logo/a4b0614/banner-assessment-3.svg
-
-[a2]: https://github.com/cmda-fe3/course-17-18/tree/master/assessment-3#description
-
-[fe3]: https://github.com/cmda-fe3
-
-[cmda]: https://github.com/cmda
-
-[pages]: https://pages.github.com
+```css
+.bar-chart-container{
+    display: inline-flex;
+    width: 35vw;
+    height: 40vh;
+}
+```
+We need to change the direction of the container so it get the full width. So lets and Flex-direction: column;
+```css
+.bar-chart-container{
+    display: inline-flex;
+    flex-direction: column;
+    width: 35vw;
+    height: 40vh;
+}
+```
+After that lets also add a fill color that correspont with the nodes.
+Lets see that again
+![barChart first try](assets/image/barChartFinisch.gif)
