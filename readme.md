@@ -1,14 +1,16 @@
 ![sanky example](assets/image/finisch.gif)
+
 This diagram shows the relationship between the music genre that people listen to and the movie genre they watch.
 The lines of the sankey diagram show genre relationship with each other. The thickness indicates the amount.
 At the bar chart are the names of the movie genre on the y axis. The x-axis indicates the amount (in percentage).
 
-##Data src
+## Data src
 The data was taken from here
 Link to src: https://www.kaggle.com/miroslavsabo/young-people-survey
 Download link: https://www.kaggle.com/miroslavsabo/young-people-survey/data
 
 An example of the data
+
 Music | Slow songs or fast songs | Dance | Folk | Country | Classical music
 -- | -- | -- | -- | -- | --
 5 | 3 | 2 | 1 | 2 | 2
@@ -30,7 +32,7 @@ Music | Slow songs or fast songs | Dance | Folk | Country | Classical music
 
 ## Proces
 
-The first thing I did was download the source file of the sanky plugin. From this source it will create this sanky.
+The first thing I did was download the source file of the sanky plugin(https://github.com/d3/d3-sankey). From this source it will create this sanky.
 ![sanky example](assets/image/sanky-example.PNG)
 
 To get the the graph working we need to format our dataset to a dataset that looks a little bit like this:
@@ -442,3 +444,12 @@ We need to change the direction of the container so it get the full width. So le
 After that lets also add a fill color that correspont with the nodes.
 Lets see that again
 ![barChart first try](assets/image/barChartFinisch.gif)
+
+## Todo
+- The bar chart ascending based on value
+- Make the movie genre clickable
+
+### licence
+MIT License
+
+Copyright (c) [2017] [Chanakarn Niyornram]
